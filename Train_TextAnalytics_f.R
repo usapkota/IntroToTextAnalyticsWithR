@@ -23,6 +23,10 @@ indexes <- createDataPartition(spam.raw$Label, times = 1,
                                p = 0.7, list = FALSE)
 
 set.seed(48743)
+
+train <- spam.raw[indexes,]
+test <- spam.raw[-indexes,]
+
 cv.folds <- createMultiFolds(train$Label, k = 10, times = 3)
 
 cv.cntrl <- trainControl(method = "repeatedcv", number = 10,
@@ -115,7 +119,7 @@ total.time <- Sys.time() - start.time
 total.time
 
 # Load results from disk.
-load("rf.cv.2.RData")
+#load("rf.cv.2.RData")
 
 # Check the results.
 rf.cv.2
@@ -125,7 +129,6 @@ confusionMatrix(train.svd$Label, rf.cv.2$finalModel$predicted)
 
 # How important was the new feature?
 library(randomForest)
-varImpPlot(rf.cv.1$finalModel)
 varImpPlot(rf.cv.2$finalModel)
 
 

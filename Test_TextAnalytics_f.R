@@ -35,18 +35,9 @@ test.tokens.dfm <- dfm_select(test.tokens.dfm, features = train.tokens.dfm)
 test.tokens.matrix <- as.matrix(test.tokens.dfm)
 test.tokens.dfm
 
-
-
-
-# With the raw test features in place next up is the projecting the term
-# counts for the unigrams into the same TF-IDF vector space as our training
-# data. The high level process is as follows:
-#      1 - Normalize each document (i.e, each row)
-#      2 - Perform IDF multiplication using training IDF values
-
 # Normalize all documents via TF.
 test.tokens.df <- apply(test.tokens.matrix, 1, term.frequency)
-str(test.tokens.df)
+#str(test.tokens.df)
 
 # Lastly, calculate TF-IDF for our training corpus.
 test.tokens.tfidf <-  apply(test.tokens.df, 2, tf.idf, idf = train.tokens.idf)
@@ -57,23 +48,12 @@ View(test.tokens.tfidf[1:25, 1:25])
 test.tokens.tfidf <- t(test.tokens.tfidf)
 
 # Fix incomplete cases
-summary(test.tokens.tfidf[1,])
+#summary(test.tokens.tfidf[1,])
 test.tokens.tfidf[is.na(test.tokens.tfidf)] <- 0.0
-summary(test.tokens.tfidf[1,])
+#summary(test.tokens.tfidf[1,])
 
-
-
-
-# With the test data projected into the TF-IDF vector space of the training
-# data we can now to the final projection into the training LSA semantic
-# space (i.e. the SVD matrix factorization).
 test.svd.raw <- t(sigma.inverse * u.transpose %*% t(test.tokens.tfidf))
 
-
-
-
-# Lastly, we can now build the test data frame to feed into our trained
-# machine learning model for predictions. First up, add Label and TextLength.
 test.svd <- data.frame(Label = test$Label, test.svd.raw, 
                        TextLength = test$TextLength)
 
