@@ -1,18 +1,5 @@
 # Test TextAnalytics final
 
-
-# We've built what appears to be an effective predictive model. Time to verify
-# using the test holdout data we set aside at the beginning of the project.
-# First stage of this verification is running the test data through our pre-
-# processing pipeline of:
-#      1 - Tokenization
-#      2 - Lower casing
-#      3 - Stopword removal
-#      4 - Stemming
-#      5 - Adding bigrams
-#      6 - Transform to dfm
-#      7 - Ensure test dfm has same features as train dfm
-
 # Tokenization.
 test.tokens <- tokens(test$Text, what = "word", 
                       remove_numbers = TRUE, remove_punct = TRUE,
@@ -91,21 +78,21 @@ test.svd <- data.frame(Label = test$Label, test.svd.raw,
                        TextLength = test$TextLength)
 
 
-# Next step, calculate SpamSimilarity for all the test documents. First up, 
-# create a spam similarity matrix.
-test.similarities <- rbind(test.svd.raw, train.irlba$v[spam.indexes,])
-test.similarities <- cosine(t(test.similarities))
-
-test.svd$SpamSimilarity <- rep(0.0, nrow(test.svd))
-spam.cols <- (nrow(test.svd) + 1):ncol(test.similarities)
-for(i in 1:nrow(test.svd)) {
-        test.svd$SpamSimilarity[i] <- mean(train.similarities[i, spam.cols])  
-}
+# # Next step, calculate SpamSimilarity for all the test documents. First up, 
+# # create a spam similarity matrix.
+# test.similarities <- rbind(test.svd.raw, train.irlba$v[spam.indexes,])
+# test.similarities <- cosine(t(test.similarities))
+# 
+# test.svd$SpamSimilarity <- rep(0.0, nrow(test.svd))
+# spam.cols <- (nrow(test.svd) + 1):ncol(test.similarities)
+# for(i in 1:nrow(test.svd)) {
+#         test.svd$SpamSimilarity[i] <- mean(train.similarities[i, spam.cols])  
+# }
 
 
 # Now we can make predictions on the test data set using our trained mighty 
 # random forest.
-preds <- predict(rf.cv.3, test.svd)
+preds <- predict(rf.cv.2, test.svd)
 
 # Drill-in on results
 confusionMatrix(preds, test.svd$Label)
